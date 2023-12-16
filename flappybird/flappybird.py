@@ -1,6 +1,7 @@
 import pgzrun
 import random
 import sys
+import threading
 
 from bluepy.btle import UUID, Peripheral
 import struct
@@ -13,7 +14,11 @@ HEIGHT = 708
 GAP = 160
 GRAVITY = 0.3
 FLAP_STRENGTH = 6.5
-SPEED = 3
+SPEED = 2
+
+sensor_delay = 0
+
+accelerometer_data = [1,2,3]
 
 bird = Actor('santa1', (75, 200))
 bird.dead = False
@@ -45,13 +50,6 @@ def update_pipes():
                 storage['highscore'] = bird.score
 
 def update_bird():
-    # Read the characteristic value
-    data = characteristic.read()
-    # Unpack the data into a tuple of floats
-    MPU6050_array = struct.unpack('<' + 'f' * (len(data) // 4), data)
-    # Get the first three values as the accelerometer data
-    accelerometer_data = MPU6050_array[:3]
-        
     uy = bird.vy
     bird.vy += accelerometer_data[1] * 0.1 # Use the y-axis value to change the vertical velocity
     bird.y += (uy + bird.vy) / 2
@@ -66,6 +64,7 @@ def update_bird():
     if bird.colliderect(pipe_top) or bird.colliderect(pipe_bottom):
         bird.dead = True
         bird.image = 'santa_dead'
+        bird.vy = 10
 
     if not 0 < bird.y < 720:
         bird.y = 200
@@ -76,13 +75,29 @@ def update_bird():
 
 
 def update():
+    global sensor_delay
+    sensor_delay += 1
+    
     if bird.score == 1:
-        sys.exit()
+        sys.exit(7)
     else:
-        update_pipes()
-        update_bird()
-        peripheral.waitForNotifications(0.01) # Listen for notifications
+        # Create two threads
+        t2 = threading.Thread(target=update_pipes)
+        t3 = threading.Thread(target=update_bird)
 
+        # Start the threads
+        if(sensor_delay == 10):
+            t1 = threading.Thread(target=get_accel_data)
+            t1.start()
+            sensor_delay = 0
+            print("get val: ", accelerometer_data[0])
+        t2.start()
+        t3.start()
+        #update_pipes()
+        #update_bird()
+        # Wait for the threads to finish
+        t2.join()
+        t3.join()
 
 def on_key_down():
     pass # Do nothing when a key is pressed
@@ -108,6 +123,15 @@ def draw():
         shadow=(1, 1)
     )
 
+def get_accel_data():
+    global accelerometer_data
+    # Read the characteristic value
+    data = characteristic.read()
+    # Unpack the data into a tuple of floats
+    MPU6050_array = struct.unpack('<' + 'f' * (len(data) // 4), data)
+    # Get the first three values as the accelerometer data
+    accelerometer_data = MPU6050_array[:3]
+
 device_address = '28:CD:C1:03:F0:24'
 TEMP_READ_UUID = "181a"
 CHARACTERISTIC_UUID = "00002a6e-0000-1000-8000-00805f9b34fb" 
@@ -124,4 +148,7 @@ characteristic_uuid = UUID(CHARACTERISTIC_UUID)
 service = peripheral.getServiceByUUID(service_uuid)
 characteristic = service.getCharacteristics(characteristic_uuid)[0]
 
-pgzrun.go()
+#pgzrun.go()
+
+
+
