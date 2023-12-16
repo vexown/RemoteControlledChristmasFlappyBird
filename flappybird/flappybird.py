@@ -2,6 +2,9 @@ import pgzrun
 import random
 import sys
 
+from bluepy.btle import UUID, Peripheral
+import struct
+
 TITLE = 'Flappy Bird'
 WIDTH = 400
 HEIGHT = 708
@@ -42,10 +45,17 @@ def update_pipes():
                 storage['highscore'] = bird.score
 
 def update_bird():
+    # Read the characteristic value
+    data = characteristic.read()
+    # Unpack the data into a tuple of floats
+    MPU6050_array = struct.unpack('<' + 'f' * (len(data) // 4), data)
+    # Get the first three values as the accelerometer data
+    accelerometer_data = MPU6050_array[:3]
+        
     uy = bird.vy
-    bird.vy += GRAVITY
+    bird.vy += accelerometer_data[1] * 0.1 # Use the y-axis value to change the vertical velocity
     bird.y += (uy + bird.vy) / 2
-    bird.x = 75
+    bird.x += accelerometer_data[0] * 0.1 # Use the x-axis value to change the horizontal position
 
     if not bird.dead:
         if bird.vy < -3:
@@ -71,11 +81,11 @@ def update():
     else:
         update_pipes()
         update_bird()
+        peripheral.waitForNotifications(0.01) # Listen for notifications
 
 
 def on_key_down():
-    if not bird.dead:
-        bird.vy = -FLAP_STRENGTH
+    pass # Do nothing when a key is pressed
 
 
 def draw():
@@ -98,5 +108,20 @@ def draw():
         shadow=(1, 1)
     )
 
+device_address = '28:CD:C1:03:F0:24'
+TEMP_READ_UUID = "181a"
+CHARACTERISTIC_UUID = "00002a6e-0000-1000-8000-00805f9b34fb" 
+
+# Connect to the device
+print("Connecting to the device...")
+peripheral = Peripheral(device_address)
+
+# Discover services and characteristics
+print("Discovering services and characteristics...")
+service_uuid = UUID(TEMP_READ_UUID)
+characteristic_uuid = UUID(CHARACTERISTIC_UUID)
+
+service = peripheral.getServiceByUUID(service_uuid)
+characteristic = service.getCharacteristics(characteristic_uuid)[0]
 
 pgzrun.go()
