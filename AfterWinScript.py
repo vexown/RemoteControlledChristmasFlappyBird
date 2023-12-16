@@ -1,5 +1,5 @@
-# Import tkinter module for GUI
 import tkinter as tk
+from PIL import Image, ImageTk
 
 # Create a root window
 root = tk.Tk()
@@ -10,14 +10,16 @@ root.title("You win!")
 # Set the window size to fullscreen
 root.attributes('-fullscreen', True)
 
-# Set the window background color to dark green
-root.configure(bg='#006400')
+# Load the image
+image = Image.open("background_winning_screen.jpeg")  # Replace with your image path
+# Resize the image to its original resolution
+image = image.resize((1024, 1024), Image.BOX)
+background_image = ImageTk.PhotoImage(image)
 
-# Create a label widget to display the text "You win!"
-label = tk.Label(root, text="You win!", font=("Comic Sans MS", 100), fg="white", bg="#006400")
-
+# Create a label widget to display the image
+background_label = tk.Label(root, image=background_image)
 # Center the label widget in the window
-label.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+background_label.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
 # Create a function to exit the window when the user presses the Esc key
 def exit(event):
@@ -26,9 +28,5 @@ def exit(event):
 # Bind the Esc key to the exit function
 root.bind('<Escape>', exit)
 
-# ADD THE GPIO CONTROL HERE
-
 # Start the main loop
 root.mainloop()
-
-
