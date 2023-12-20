@@ -7,19 +7,22 @@ root = tk.Tk()
 # Set the window title
 root.title("You win!")
 
-# Set the window size to fullscreen
+# Set the window to fullscreen
 root.attributes('-fullscreen', True)
+
+# Get the screen width and height
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
 
 # Load the image
 image = Image.open("background_winning_screen.jpeg")  # Replace with your image path
-# Resize the image to its original resolution
-image = image.resize((1024, 1024), Image.BOX)
+# Resize the image to fit the screen dimensions
+image = image.resize((screen_width, screen_height), Image.BOX)
 background_image = ImageTk.PhotoImage(image)
 
 # Create a label widget to display the image
 background_label = tk.Label(root, image=background_image)
-# Center the label widget in the window
-background_label.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+background_label.pack(fill=tk.BOTH, expand=True)
 
 # Create a function to exit the window when the user presses the Esc key
 def exit(event):

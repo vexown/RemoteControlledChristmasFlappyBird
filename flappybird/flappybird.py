@@ -90,7 +90,7 @@ def update():
             t1 = threading.Thread(target=get_accel_data)
             t1.start()
             sensor_delay = 0
-            print("get val: ", accelerometer_data[0])
+            #print("get val: ", accelerometer_data[0])
         t2.start()
         t3.start()
         #update_pipes()
