@@ -7,8 +7,8 @@ from bluepy.btle import UUID, Peripheral
 import struct
 
 TITLE = 'Flappy Bird'
-WIDTH = 400
-HEIGHT = 708
+WIDTH = 1024
+HEIGHT = 600
 
 # These constants control the difficulty of the game
 GAP = 160
