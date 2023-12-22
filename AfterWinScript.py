@@ -1,5 +1,12 @@
 import tkinter as tk
 from PIL import Image, ImageTk
+import subprocess
+from gpiozero import Servo
+from time import sleep
+
+servo = Servo(18)
+
+servo.value = 0.75
 
 # Create a root window
 root = tk.Tk()

@@ -2,9 +2,15 @@ import pgzrun
 import random
 import sys
 import threading
+import subprocess
+import time
 
 from bluepy.btle import UUID, Peripheral
 import struct
+
+from gpiozero import Servo
+
+servo = Servo(18)
 
 TITLE = 'Flappy Bird'
 WIDTH = 1024
@@ -26,6 +32,45 @@ bird.score = 0
 bird.vy = 0
 
 storage.setdefault('highscore', 0)
+
+def connect_to_bluetooth(max_attempts=3):
+    global service
+    global characteristic
+    global process
+
+    device_address = '28:CD:C1:03:F0:24'
+    TEMP_READ_UUID = "181a"
+    CHARACTERISTIC_UUID = "00002a6e-0000-1000-8000-00805f9b34fb"
+
+    attempts = 0
+    connected = False
+    while attempts < max_attempts and not connected:
+        try:
+            print(f"Connecting to the device... Attempt {attempts + 1}")
+            # Establish connection
+            peripheral = Peripheral(device_address)
+
+            # Discover services and characteristics
+            print("Discovering services and characteristics...")
+            service_uuid = UUID(TEMP_READ_UUID)
+            characteristic_uuid = UUID(CHARACTERISTIC_UUID)
+
+            service = peripheral.getServiceByUUID(service_uuid)
+            characteristic = service.getCharacteristics(characteristic_uuid)[0]
+
+            connected = True
+        except Exception as e:
+            print(f"Connection attempt failed: {e}")
+            attempts += 1
+            time.sleep(2)  # Wait for a while before retrying
+
+    if connected:
+        # Bluetooth connection successful, proceed with your game or other logic
+        print("Bluetooth connection successful. Starting the game or other logic here...")
+        # Call your game logic or other functionalities here
+    else:
+        print("Failed to connect to Bluetooth after multiple attempts.")
+        sys.exit(1)
 
 
 def reset_pipes():
@@ -132,21 +177,11 @@ def get_accel_data():
     # Get the first three values as the accelerometer data
     accelerometer_data = MPU6050_array[:3]
 
-device_address = '28:CD:C1:03:F0:24'
-TEMP_READ_UUID = "181a"
-CHARACTERISTIC_UUID = "00002a6e-0000-1000-8000-00805f9b34fb" 
+
+servo.value = -0.75
 
 # Connect to the device
-print("Connecting to the device...")
-peripheral = Peripheral(device_address)
-
-# Discover services and characteristics
-print("Discovering services and characteristics...")
-service_uuid = UUID(TEMP_READ_UUID)
-characteristic_uuid = UUID(CHARACTERISTIC_UUID)
-
-service = peripheral.getServiceByUUID(service_uuid)
-characteristic = service.getCharacteristics(characteristic_uuid)[0]
+connect_to_bluetooth()
 
 #pgzrun.go()
 
