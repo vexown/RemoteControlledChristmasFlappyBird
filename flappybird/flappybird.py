@@ -18,7 +18,7 @@ HEIGHT = 600
 
 # These constants control the difficulty of the game
 GAP = 160
-GRAVITY = 0.3
+GRAVITY = 100
 FLAP_STRENGTH = 6.5
 SPEED = 2
 
@@ -98,9 +98,19 @@ def update_pipes():
 
 def update_bird():
     uy = bird.vy
-    bird.vy += accelerometer_data[1] * 0.1 # Use the y-axis value to change the vertical velocity
+    y_move = accelerometer_data[2] * 0.5
+    x_move = accelerometer_data[1] * 0.5
+
+    bird.vy += y_move # Use the y-axis value to change the vertical velocity
     bird.y += (uy + bird.vy) / 2
-    bird.x += accelerometer_data[0] * 0.1 # Use the x-axis value to change the horizontal position
+    bird.x += x_move # Use the x-axis value to change the horizontal position
+
+    #print("accel data 0:")
+    #print(accelerometer_data[0])
+    #print("accel data 1:")
+    #print(accelerometer_data[1])
+    #print("accel data 2:")
+    #print(accelerometer_data[2])
 
     if not bird.dead:
         if bird.vy < -3:
