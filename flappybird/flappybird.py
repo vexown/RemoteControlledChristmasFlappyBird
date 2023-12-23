@@ -178,7 +178,7 @@ def get_accel_data():
     accelerometer_data = MPU6050_array[:3]
 
 
-servo.value = -0.75
+servo.value = 1
 
 # Connect to the device
 connect_to_bluetooth()

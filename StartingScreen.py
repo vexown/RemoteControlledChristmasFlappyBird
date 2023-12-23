@@ -6,7 +6,7 @@ from time import sleep
 
 servo = Servo(18)
 
-servo.value = -1
+servo.value = 1
 
 # Create a root window
 root = tk.Tk()
@@ -22,7 +22,7 @@ screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenheight()
 
 # Load the image
-image = Image.open("background_winning_screen.jpeg")  # Replace with your image path
+image = Image.open("welcome_screen.jpeg")  # Replace with your image path
 # Resize the image to fit the screen dimensions
 image = image.resize((screen_width, screen_height), Image.BOX)
 background_image = ImageTk.PhotoImage(image)
