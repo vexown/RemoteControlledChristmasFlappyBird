@@ -24,6 +24,8 @@ SPEED = 2
 
 sensor_delay = 0
 
+paused = False
+
 accelerometer_data = [1,2,3]
 
 bird = Actor('santa1', (75, 200))
@@ -33,7 +35,7 @@ bird.vy = 0
 
 storage.setdefault('highscore', 0)
 
-def connect_to_bluetooth(max_attempts=3):
+def connect_to_bluetooth(max_attempts=5):
     global service
     global characteristic
     global process
@@ -120,32 +122,36 @@ def update_bird():
 
 
 def update():
+    global paused
     global sensor_delay
-    sensor_delay += 1
-    
-    if bird.score == 1:
-        sys.exit(7)
-    else:
-        # Create two threads
-        t2 = threading.Thread(target=update_pipes)
-        t3 = threading.Thread(target=update_bird)
+    if not paused:
+        sensor_delay += 1
+        
+        if bird.score == 1:
+            sys.exit(7)
+        else:
+            # Create two threads
+            t2 = threading.Thread(target=update_pipes)
+            t3 = threading.Thread(target=update_bird)
 
-        # Start the threads
-        if(sensor_delay == 10):
-            t1 = threading.Thread(target=get_accel_data)
-            t1.start()
-            sensor_delay = 0
-            #print("get val: ", accelerometer_data[0])
-        t2.start()
-        t3.start()
-        #update_pipes()
-        #update_bird()
-        # Wait for the threads to finish
-        t2.join()
-        t3.join()
+            # Start the threads
+            if(sensor_delay == 10):
+                t1 = threading.Thread(target=get_accel_data)
+                t1.start()
+                sensor_delay = 0
+                #print("get val: ", accelerometer_data[0])
+            t2.start()
+            t3.start()
+            #update_pipes()
+            #update_bird()
+            # Wait for the threads to finish
+            t2.join()
+            t3.join()
 
-def on_key_down():
-    pass # Do nothing when a key is pressed
+def on_key_down(key):
+    global paused
+    if key == keys.P:
+        paused = not paused
 
 
 def draw():
@@ -167,6 +173,15 @@ def draw():
         fontsize=30,
         shadow=(1, 1)
     )
+    if paused:
+        screen.draw.text(
+            "PAUSED",
+            color=(200, 170, 0),
+            midbottom=(WIDTH // 2, HEIGHT // 2),
+            fontsize=70,
+            shadow=(1, 1)
+        )
+
 
 def get_accel_data():
     global accelerometer_data
