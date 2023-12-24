@@ -22,9 +22,8 @@ HEIGHT = 600
 
 # These constants control the difficulty of the game
 GAP = 160
-GRAVITY = 100
-FLAP_STRENGTH = 6.5
 SPEED = 2
+WIN_SCORE = 5
 
 sensor_delay = 0
 
@@ -142,7 +141,7 @@ def update():
     if not paused:
         sensor_delay += 1
         
-        if bird.score == 1:
+        if bird.score == WIN_SCORE:
             sys.exit(7)
         else:
             # Create two threads
