@@ -103,11 +103,11 @@ def update_pipes():
 def update_bird():
     uy = bird.vy
     y_move = accelerometer_data[2] * 0.5
-    x_move = accelerometer_data[1] * 0.5
+    x_move = accelerometer_data[1] * 5
 
     bird.vy += y_move # Use the y-axis value to change the vertical velocity
     bird.y += (uy + bird.vy) / 2
-    bird.x += 0.02 # Use the x-axis value to change the horizontal position
+    bird.x += x_move # Use the x-axis value to change the horizontal position
 
     #print("accel data 0:")
     #print(accelerometer_data[0])
@@ -129,6 +129,7 @@ def update_bird():
 
     if not 0 < bird.y < 600:
         bird.y = 200
+        bird.x = 200
         bird.dead = False
         bird.score = 0
         bird.vy = 0
