@@ -4,7 +4,13 @@ import subprocess
 from gpiozero import Servo
 from time import sleep
 
+from gpiozero import LED
+
+led = LED(25)
+
 servo = Servo(18)
+
+led.off()
 
 servo.value = -1
 

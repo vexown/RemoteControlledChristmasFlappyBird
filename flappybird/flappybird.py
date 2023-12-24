@@ -10,6 +10,10 @@ import struct
 
 from gpiozero import Servo
 
+from gpiozero import LED
+
+led = LED(25)
+
 servo = Servo(18)
 
 TITLE = 'Flappy Bird'
@@ -103,7 +107,7 @@ def update_bird():
 
     bird.vy += y_move # Use the y-axis value to change the vertical velocity
     bird.y += (uy + bird.vy) / 2
-    bird.x += x_move # Use the x-axis value to change the horizontal position
+    bird.x += 0.02 # Use the x-axis value to change the horizontal position
 
     #print("accel data 0:")
     #print(accelerometer_data[0])
@@ -123,7 +127,7 @@ def update_bird():
         bird.image = 'santa_dead'
         bird.vy = 10
 
-    if not 0 < bird.y < 720:
+    if not 0 < bird.y < 600:
         bird.y = 200
         bird.dead = False
         bird.score = 0
@@ -202,6 +206,7 @@ def get_accel_data():
     # Get the first three values as the accelerometer data
     accelerometer_data = MPU6050_array[:3]
 
+led.on()
 
 servo.value = 1
 
