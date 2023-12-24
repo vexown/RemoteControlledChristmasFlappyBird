@@ -133,6 +133,14 @@ def update_bird():
         bird.score = 0
         bird.vy = 0
         reset_pipes()
+    
+    if not 0 < bird.x < 1024:
+        bird.y = 200
+        bird.x = 200
+        bird.dead = False
+        bird.score = 0
+        bird.vy = 0
+        reset_pipes()
 
 
 def update():
