@@ -21,7 +21,7 @@ WIDTH = 1024
 HEIGHT = 600
 
 # These constants control the difficulty of the game
-GAP = 160
+GAP = 300
 SPEED = 2
 WIN_SCORE = 5
 
